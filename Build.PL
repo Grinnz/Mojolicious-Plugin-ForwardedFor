@@ -18,7 +18,7 @@ if (!grep { $_ } values %errors)
     use strict;
     use warnings;
 
-    use 5.006;
+    use 5.010001;
     # use Module::Build::Tiny 0.034;
     Module::Build::Tiny::Build_PL();
 }
@@ -88,10 +88,14 @@ EOW
       "license" => "artistic_2",
       "module_name" => "Mojolicious::Plugin::ForwardedFor",
       "recursive_test_files" => 1,
+      "requires" => {
+        "Mojolicious" => "7.0",
+        "perl" => "5.010001"
+      },
       "test_requires" => {
         "File::Spec" => 0,
         "Module::Metadata" => 0,
-        "Test::More" => 0
+        "Test::More" => "0.88"
       }
     );
 
@@ -99,7 +103,7 @@ EOW
     my %fallback_build_requires = (
       "File::Spec" => 0,
       "Module::Metadata" => 0,
-      "Test::More" => 0
+      "Test::More" => "0.88"
     );
 
 
