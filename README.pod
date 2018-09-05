@@ -1,22 +1,4 @@
-package Mojolicious::Plugin::ForwardedFor;
-
-use Mojo::Base 'Mojolicious::Plugin';
-
-our $VERSION = '0.001';
-
-sub register {
-  my ($self, $app, $options) = @_;
-
-  my $levels = int($options->{levels} // $ENV{MOJO_REVERSE_PROXY} // 1);
-  $app->helper(forwarded_for => sub {
-    my $c = shift;
-    return $c->tx->original_remote_address unless $levels > 0;
-    my @addresses = split /\s*,\s*/, ($c->tx->req->headers->header('X-Forwarded-For') // '');
-    return $addresses[-$levels] // $addresses[0] // $c->tx->original_remote_address;
-  });
-}
-
-1;
+=pod
 
 =head1 NAME
 
@@ -102,3 +84,5 @@ This is free software, licensed under:
 =head1 SEE ALSO
 
 L<Mojo::Transaction>, L<Mojolicious::Guides::Cookbook>
+
+=cut
