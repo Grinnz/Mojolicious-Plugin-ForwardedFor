@@ -36,4 +36,12 @@ $t->get_ok('/', {'X-Forwarded-For' => '1.2.3.4'})->content_is('1.2.3.4');
 $t->get_ok('/', {'X-Forwarded-For' => '4.3.2.1, 1.2.3.4'})->content_is('4.3.2.1');
 $t->get_ok('/', {'X-Forwarded-For' => '8.8.8.8, 4.3.2.1, 1.2.3.4'})->content_is('4.3.2.1');
 
+# non-numeric levels
+ok !defined eval { plugin ForwardedFor => {levels => 'foo'} }, 'non-numeric levels';
+like $@, qr/isn't numeric/, 'right error';
+ok !defined eval { plugin ForwardedFor => {levels => '0foo'} }, 'non-numeric levels';
+like $@, qr/isn't numeric/, 'right error';
+ok !defined eval { plugin ForwardedFor => {levels => ''} }, 'non-numeric levels';
+like $@, qr/isn't numeric/, 'right error';
+
 done_testing;

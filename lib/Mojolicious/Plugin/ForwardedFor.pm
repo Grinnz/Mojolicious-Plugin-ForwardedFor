@@ -8,7 +8,17 @@ our $VERSION = '0.001';
 sub register {
   my ($self, $app, $options) = @_;
 
-  my $levels = int($options->{levels} // $ENV{MOJO_REVERSE_PROXY} // 1);
+  my ($levels, $err);
+  {
+    local $@;
+    use warnings FATAL => 'numeric';
+    unless (eval { $levels = int($options->{levels} // $ENV{MOJO_REVERSE_PROXY} // 1); 1 }) {
+      $err = $@;
+    }
+  }
+
+  die "Invalid reverse proxy 'levels' for ForwardedFor: $err" if defined $err;
+
   $app->helper(forwarded_for => sub {
     my $c = shift;
     return $c->tx->original_remote_address unless $levels > 0;
@@ -39,16 +49,17 @@ L<Mojolicious> supports deployment via a
 L<reverse proxy|Mojolicious::Guides::Cookbook/"Reverse proxy"> setup by
 specifying the L<proxy|Mojo::Server::Hypnotoad/"proxy"> configuration option
 for Hypnotoad, or the C<MOJO_REVERSE_PROXY> environment variable. However,
-L<Mojo::Transaction/"remote_address"> will only retrieve the address appended
-most recently to the C<X-Forwarded-For> header, as it cannot automatically
+L<Mojo::Transaction/"remote_address"> will in this case only return the most
+recent address from the C<X-Forwarded-For> header, as it cannot automatically
 determine how many remote addresses correspond to proxies.
 
 L<Mojolicious::Plugin::ForwardedFor> can be configured with the number of
 reverse proxy L</"levels"> that you control, and provides a L</"forwarded_for">
-helper that will return the remote address at that level. It is important not
-to set this level higher than the number of proxies which will append addresses
-to the C<X-Forwarded-For> header, as the original request can pass anything as
-the initial value of the header and thus spoof additional proxy levels.
+helper method that will return the remote address at that level. It is
+important to set L</"levels"> no higher than the number of proxies that will
+have appended addresses to the C<X-Forwarded-For> header, as the original
+requests can pass anything as the initial value of the header, and thus spoof
+additional proxy levels.
 
 =head1 HELPERS
 
@@ -60,9 +71,9 @@ L<Mojolicious::Plugin::ForwardedFor> implements the following helpers.
 
 Returns the least recently appended remote address from the C<X-Forwarded-For>
 header, while skipping no more than the configured number of reverse proxy
-L</"levels">. Returns the original remote address of the request if configured
-for 0 reverse proxy levels, or if no addresses have been appended to the
-header.
+L</"levels">. Returns the originating address of the current request if
+configured for 0 reverse proxy levels, or if no addresses have been appended to
+the header.
 
 =head1 METHODS
 
