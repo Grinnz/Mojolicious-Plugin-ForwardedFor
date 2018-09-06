@@ -3,7 +3,7 @@ package Mojolicious::Plugin::ForwardedFor;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util 'trim';
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 sub register {
   my ($self, $app, $options) = @_;
