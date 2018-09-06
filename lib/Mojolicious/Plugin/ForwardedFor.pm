@@ -1,6 +1,7 @@
 package Mojolicious::Plugin::ForwardedFor;
 
 use Mojo::Base 'Mojolicious::Plugin';
+use Mojo::Util 'trim';
 
 our $VERSION = '0.001';
 
@@ -11,7 +12,7 @@ sub register {
   $app->helper(forwarded_for => sub {
     my $c = shift;
     return $c->tx->original_remote_address unless $levels > 0;
-    my @addresses = split /\s*,\s*/, ($c->tx->req->headers->header('X-Forwarded-For') // '');
+    my @addresses = split /\s*,\s*/, trim($c->tx->req->headers->header('X-Forwarded-For') // '');
     return $addresses[-$levels] // $addresses[0] // $c->tx->original_remote_address;
   });
 }
@@ -57,10 +58,11 @@ L<Mojolicious::Plugin::ForwardedFor> implements the following helpers.
 
   my $remote_addr = $c->forwarded_for;
 
-Returns the remote address as indicated in the C<X-Forwarded-For> header after
-skipping up to the configured number of reverse proxy L</"levels">. Returns the
-original remote address of the request if configured for 0 reverse proxy
-levels, or if no addresses have been appended to the header.
+Returns the least recently appended remote address from the C<X-Forwarded-For>
+header, while skipping no more than the configured number of reverse proxy
+L</"levels">. Returns the original remote address of the request if configured
+for 0 reverse proxy levels, or if no addresses have been appended to the
+header.
 
 =head1 METHODS
 
