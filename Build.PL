@@ -84,7 +84,7 @@ EOW
         "Dan Book <dbook\@cpan.org>"
       ],
       "dist_name" => "Mojolicious-Plugin-ForwardedFor",
-      "dist_version" => "0.001",
+      "dist_version" => "0.002",
       "license" => "artistic_2",
       "module_name" => "Mojolicious::Plugin::ForwardedFor",
       "recursive_test_files" => 1,
