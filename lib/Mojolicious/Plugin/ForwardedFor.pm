@@ -61,6 +61,11 @@ have appended addresses to the C<X-Forwarded-For> header, as the original
 requests can pass anything as the initial value of the header, and thus spoof
 additional proxy levels.
 
+Since Mojolicious 8.72, you can configure
+L<Mojo::Server::Hypnotoad/"trusted_proxies"> as a more reliable alternative to
+the baseline reverse proxy configuration, affecting
+L<Mojo::Transaction/"remote_address"> directly without need of this plugin.
+
 =head1 HELPERS
 
 L<Mojolicious::Plugin::ForwardedFor> implements the following helpers.
